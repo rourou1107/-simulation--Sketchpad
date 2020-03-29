@@ -9,41 +9,100 @@
     <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-    <canvas id="canvas"></canvas>
-
+    <div class="wrapper">
+        <canvas id="canvas"></canvas>
+        <div class="button-wrapper" id="button-wrapper">
+            画笔颜色
+            <button>黑色</button>
+            <button class="active">红色</button>
+            <br/>
+            画笔粗细
+            <button class="active">粗</button>
+            <button>细</button>
+            <br/>
+            橡皮擦&emsp;
+            <button id="clear">擦除</button>
+        </div>
+    </div>
 
     <script>
         let canvas = document.getElementById('canvas')
-        canvas.width = document.documentElement.clientWidth
+        canvas.width = document.documentElement.clientWidth * 0.8
         canvas.height = document.documentElement.clientHeight
 
-        let x, y
         let last // 记录上一次结束点的位置
         let painting = false // 是否画线的标志
+        let clearing = false
+        let lineWidth = 10 // 画笔粗细
+        let strokeStyle = 'red' // 画笔颜色
         var ctx = canvas.getContext('2d')
+        let buttons = document.getElementsByTagName('button')
         // 画板函数
-        function draw (lastX, lastY, x, y) {
+        function draw (lastX, lastY, x, y, strokeStyle, lineWidth) {
             ctx.beginPath()
             ctx.moveTo(lastX, lastY)
             ctx.lineTo(x, y)
-            ctx.strokeStyle = 'red'
-            ctx.lineWidth = 10
+            ctx.strokeStyle = strokeStyle
+            ctx.lineWidth = lineWidth
             ctx.lineCap = "round"
             ctx.stroke()
         }
-
+        function change(style, width) {
+            strokeStyle = style
+            lineWidth = width
+        }
+        document.getElementById('button-wrapper').addEventListener('click', function(e){
+            if(e.target.innerText === '黑色'){
+                for( let i=0; i<2; i++){
+                    buttons[i].classList = []
+                }
+                strokeStyle = 'black'
+                e.target.classList = ['active']
+            }else if(e.target.innerText === '红色') {
+                for( let i=0; i<2; i++){
+                    buttons[i].classList = []
+                }
+                strokeStyle = 'red'
+                e.target.classList = ['active']
+            }else if(e.target.innerText === '粗') {
+                for( let i=2; i<4; i++){
+                    buttons[i].classList = []
+                }
+                lineWidth = 10
+                e.target.classList = ['active']
+            }else if(e.target.innerText === '细') {
+                for( let i=2; i<4; i++){
+                    buttons[i].classList = []
+                }
+                lineWidth = 2
+                e.target.classList = ['active']
+            }
+        })
+        document.getElementById('clear').addEventListener('click', function(e){
+            canvas.onmousedown = (e) => {
+                clearing = true
+            }
+            canvas.onmousemove = (e) => {
+                if(clearing) {
+                    ctx.clearRect(e.clientX, e.clientY, 35, 35);
+                }
+            }
+            canvas.onmouseup = (e) => {
+                clearing = false
+            }
+        })
         // 移动端
-        if('ontouchend' in document) {
-            canvas.ontouchstart = (e) => {
-                last = [e.touches[0].clientX, e.touches[0].clientY]
-            }
-            canvas.ontouchmove = (e) => {
-                let touchX = e.touches[0].clientX
-                let touchY = e.touches[0].clientY
-                draw(last[0], last[1], touchX, touchY)
-                last = [touchX, touchY]
-            }
-        }else {
+        // if('ontouchend' in document) {
+        //     canvas.ontouchstart = (e) => {
+        //         last = [e.touches[0].clientX, e.touches[0].clientY]
+        //     }
+        //     canvas.ontouchmove = (e) => {
+        //         let touchX = e.touches[0].clientX
+        //         let touchY = e.touches[0].clientY
+        //         draw(last[0], last[1], touchX, touchY)
+        //         last = [touchX, touchY]
+        //     }
+        // }else {
             // PC端
             canvas.onmousedown = (e) => {
                 last = [e.clientX, e.clientY]
@@ -51,14 +110,14 @@
             }
             canvas.onmousemove = (e) => {
                 if(painting) {
-                    draw(last[0], last[1], e.clientX, e.clientY)
+                    draw(last[0], last[1], e.clientX, e.clientY, strokeStyle, lineWidth)
                     last = [e.clientX, e.clientY]
                 }
             }
             canvas.onmouseup = (e) => {
                 painting = false
             }
-        }
+        // }
 
     </script>
 </body>

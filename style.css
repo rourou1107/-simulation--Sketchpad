@@ -3,8 +3,24 @@
     padding: 0;
     box-sizing: border-box;
 }
-#canvas {
-    display: block;
-    /*border: 1px solid red;*/
 
+.wrapper {
+    display: flex;
+}
+.wrapper > #canvas {
+    border: 1px solid #ccc;
+
+}
+.wrapper > .button-wrapper {
+    padding-left: 10px;
+}
+.wrapper > .button-wrapper > button {
+    background: #ffffff;
+    padding: 0.5em 1em;
+    border: 1px solid #ccc;
+    margin-top: 20px;
+    margin-left: 10px;
+}
+.wrapper > .button-wrapper > button.active {
+    background: #f9ecec;
 }
